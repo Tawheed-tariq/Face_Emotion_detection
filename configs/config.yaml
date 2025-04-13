@@ -1,0 +1,25 @@
+dataset:
+  affectnet_path: "datasets/affectnet/train"
+  fer2013_val_path: "datasets/fer2013/val"
+  fer2013_test_path: "datasets/fer2013/test"
+
+training:
+  batch_size: 64
+  num_classes: 7
+  epochs: 20
+  learning_rate: 0.0001
+  image_size: 224
+  grayscale: true
+  save_path: "output/checkpoints/resnet_emotion_epoch{epoch}.pth"
+  log_file: "output/log.txt"
+  pretrained: true
+
+scheduler:
+  use_scheduler: true
+  mode: "min"
+  factor: 0.5
+  patience: 3
+
+early_stopping:
+  use_early_stopping: true
+  patience: 5
