@@ -1,7 +1,7 @@
 dataset:
-  affectnet_path: "datasets/affectnet/train"
-  fer2013_val_path: "datasets/fer2013/val"
-  fer2013_test_path: "datasets/fer2013/test"
+  train_path: ""
+  val_path: ""
+  test_path: ""
 
 training:
   batch_size: 64
@@ -23,3 +23,5 @@ scheduler:
 early_stopping:
   use_early_stopping: true
   patience: 5
+
+ckpt_path: null

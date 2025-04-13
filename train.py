@@ -39,14 +39,20 @@ transform = transforms.Compose([
 ])
 
 # Datasets and DataLoaders
-train_dataset = datasets.ImageFolder(cfg['dataset']['affectnet_path'], transform=transform)
-val_dataset = datasets.ImageFolder(cfg['dataset']['fer2013_val_path'], transform=transform)
+train_dataset = datasets.ImageFolder(cfg['dataset']['train_path'], transform=transform)
+val_dataset = datasets.ImageFolder(cfg['dataset']['val_path'], transform=transform)
 
 train_loader = DataLoader(train_dataset, batch_size=cfg['training']['batch_size'], shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=cfg['training']['batch_size'], shuffle=False)
 
 # Model, loss, optimizer
 model = EmotionResNet(num_classes=cfg['training']['num_classes'], pretrained=cfg['training']['pretrained']).to(device)
+
+# Load from checkpoint if specified
+if cfg.get('ckpt_path'):
+    print(f"Loading model from checkpoint: {cfg['ckpt_path']}")
+    model.load_state_dict(torch.load(cfg['ckpt_path'], map_location=device))
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=cfg['training']['learning_rate'])
 

@@ -23,7 +23,7 @@ transform = transforms.Compose([
 ])
 
 # Test set
-test_dataset = datasets.ImageFolder(cfg['dataset']['fer2013_test_path'], transform=transform)
+test_dataset = datasets.ImageFolder(cfg['dataset']['test_path'], transform=transform)
 test_loader = DataLoader(test_dataset, batch_size=cfg['training']['batch_size'], shuffle=False)
 
 # Evaluation
