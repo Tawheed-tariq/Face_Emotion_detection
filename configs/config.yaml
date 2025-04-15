@@ -1,7 +1,8 @@
 dataset:
   train_path: "/DATA/Tawheed/emotion_data/images//train"
-  val_path: "/DATA/Tawheed/emotion_data/images//test"
-  test_path: "/DATA/Tawheed/emotion_data/images//test"
+  val_path: "/DATA/Tawheed/emotion_data/images/test"
+  test_path: "/DATA/Tawheed/emotion_data/images/test"
+  class_names: ["Angry", "Disgust", "Fear", "Happy", "Sad", "Surprise", "Neutral"]
 
 training:
   batch_size: 128
@@ -22,5 +23,14 @@ scheduler:
 early_stopping:
   use_early_stopping: true
   patience: 10
+
+model:
+  name: "resnet50"
+  num_classes: 7
+
+test:
+  ckpt: "/home/tawheed/HumanitiesProject/Face_Emotion_detection/output/2025-04-15_08-20-43/checkpoints/best_model.pth"
+  img_dir: "/DATA/Tawheed/emotion_data/predict"
+  output_dir: "/home/tawheed/HumanitiesProject/Face_Emotion_detection/output/2025-04-15_08-20-43/"
 
 ckpt_path: null
