@@ -1,3 +1,22 @@
+#!/usr/bin/env python3
+# Face Emotion Recognition Model
+# Copyright 2025 Tavaheed Tariq
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+
+import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 import torch
 from torch.utils.data import DataLoader
@@ -5,13 +24,21 @@ from torchvision import datasets, transforms
 from models.resnet_emotion import EmotionResNet
 from config import load_config
 from util import print_metrics
+from tqdm import tqdm
+
+checkpoint_path = "/home/tawheed/HumanitiesProject/Face_Emotion_detection/output/2025-04-15_08-20-43/checkpoints/best_model.pth"  # Update with your checkpoint path
+reslts_path = "/home/tawheed/HumanitiesProject/Face_Emotion_detection/output/2025-04-15_08-20-43/results.txt"  # Update with your results path
 
 cfg = load_config()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load model
 model = EmotionResNet(num_classes=cfg['training']['num_classes'])
-model.load_state_dict(torch.load("checkpoints/resnet_emotion_epoch20.pth"))
+checkpoint = torch.load(checkpoint_path)
+if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+    model.load_state_dict(checkpoint['model_state_dict'])
+else:
+    model.load_state_dict(checkpoint)
 model = model.to(device)
 model.eval()
 
@@ -30,17 +57,27 @@ test_loader = DataLoader(test_dataset, batch_size=cfg['training']['batch_size'],
 # Evaluation
 y_true, y_pred = [], []
 with torch.no_grad():
-    for images, labels in test_loader:
-        images = images.to(device)
+    test_loop = tqdm(test_loader, desc="Evaluating", leave=False)
+    for images, labels in test_loop:
+        images, labels = images.to(device), labels.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
-        y_true.extend(labels.numpy())
+        y_true.extend(labels.cpu().numpy())
         y_pred.extend(predicted.cpu().numpy())
 
-print("Classification Report:")
-print(classification_report(y_true, y_pred, target_names=test_dataset.classes))
+        test_loop.set_postfix({"Accuracy": f"{(predicted == labels).float().mean():.4f}"})
 
-print("Confusion Matrix:")
-print(confusion_matrix(y_true, y_pred))
-
-print_metrics(y_true, y_pred)
+with open(reslts_path, "w") as f:
+    f.write("Classification Report:\n")
+    report = classification_report(y_true, y_pred, target_names=test_dataset.classes)
+    f.write(f"{report}\n")
+    f.write("\nConfusion Matrix:\n")
+    cm = confusion_matrix(y_true, y_pred)
+    f.write(str(cm))
+    f.write("\n")
+    f.write("Confusion Matrix (Normalized):\n")
+    cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    f.write(str(cm_normalized))
+    f.write("\n")
+    f.write("Metrics:\n")
+    f.write(str(print_metrics(y_true, y_pred)))
