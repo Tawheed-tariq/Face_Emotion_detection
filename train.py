@@ -73,6 +73,7 @@ if cfg['early_stopping']['use_early_stopping']:
 
 # Training loop
 for epoch in range(cfg['training']['epochs']):
+    print(f"Epoch {epoch + 1}/{cfg['training']['epochs']}")
     model.train()
     running_loss = 0.0
 

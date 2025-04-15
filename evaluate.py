@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from models.resnet_emotion import EmotionResNet
 from config import load_config
+from util import print_metrics
 
 cfg = load_config()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -41,3 +42,5 @@ print(classification_report(y_true, y_pred, target_names=test_dataset.classes))
 
 print("Confusion Matrix:")
 print(confusion_matrix(y_true, y_pred))
+
+print_metrics(y_true, y_pred)
