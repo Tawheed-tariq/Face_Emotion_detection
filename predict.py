@@ -55,7 +55,7 @@ for img_name in os.listdir(img_dir):
         # Add a new row to the DataFrame
         df.loc[len(df)] = {
             'image_name': img_name,
-            **{class_names[i]: f"{probs[0][i].item():.2f}" for i in range(len(class_names))},
+            **{class_names[i]: round(probs[0][i].item(), 4) for i in range(len(class_names))},
             'predicted_class': pred_class
         }
 
